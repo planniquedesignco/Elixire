@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Elixiré | Store Management</title><link rel="stylesheet" href="../assets/style.css"></head><body><div id="login" class="wrap" style="max-width:460px;padding-top:100px"><div class="brand">Elixir<span>é</span></div><div class="eyebrow" style="margin-top:15px">Store administration</div><div id="demoLogin" class="hide" hidden></div><h2>Welcome back.</h2><form onsubmit="login(event)"><div class="field"><label>Admin password</label><input id="password" type="password" required autocomplete="current-password"></div><button class="primary full">Sign in to dashboard</button></form><p class="muted" id="loginMessage">Enter your administrator password to continue.</p><a href="../"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px"><path d="M19 12H5m7-7-7 7 7 7"/></svg> Back to storefront</a></div><div id="app" class="admin-shell hide"><aside class="sidebar"><a href="../" class="brand">Elixiré</a><div class="eyebrow">Store management</div><button data-tab="overview" onclick="tab('overview')">Overview</button><button data-tab="products" onclick="tab('products')">Products & inventory</button><button data-tab="orders" onclick="tab('orders')">Orders & payments</button><button data-tab="settings" onclick="tab('settings')">Shipping settings</button><button data-tab="audit" onclick="tab('audit')">Activity log</button><hr style="border:0;border-top:1px solid #4c6655;margin:20px 0"><button onclick="logout()">Sign out</button></aside><main class="admin-main"><div class="admin-top"><div><div class="eyebrow">Elixiré / Store administration</div><h2 id="heading">Overview</h2></div><a class="secondary" href="../" target="_blank">View storefront ↗</a></div><div id="previewAdmin" class="hide" hidden></div><div id="content">Loading…</div></main></div><div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div id="modalBox" class="modal-box"></div></div><script src="../assets/runtime.js"></script><script src="../assets/admin.js"></script>
+<script>
+/* Presentation-only changes. The underlying order and payment behavior is unchanged. */
+(function(){
+  const originalOverview=window.overview;
+  window.overview=async function(){
+    const {stats:s}=await api('/admin/overview');
+    document.querySelector('#content').innerHTML=`
+      <div class="stats">
+        <div class="stat"><small>Total orders</small><strong>${s.orders||0}</strong></div>
+        <div class="stat"><small>Paid order value</small><strong style="font-size:22px">${rm(s.paid_total)}</strong></div>
+        <div class="stat"><small>Awaiting payment</small><strong>${s.pending||0}</strong></div>
+        <div class="stat"><small>Available units</small><strong>${s.units||0}</strong></div>
+      </div>
+      <div class="notice"><b>Inventory watch:</b> ${s.low_stock||0} published products are at or below their low-stock threshold.</div>
+      <div class="panel"><div class="eyebrow">Operations overview</div><h3>Your store, all in one place.</h3>
+      <p class="muted">Manage your product catalogue, review incoming orders, monitor payment status and coordinate fulfillment from one dashboard.</p>
+      <div class="actions"><button class="primary" onclick="tab('orders')">Review orders</button><button class="secondary" onclick="tab('products')">Manage products</button></div></div>`;
+  };
+  const originalModal=window.modal;
+  window.modal=function(html){
+    return originalModal(html.replace('Upload your image to a public image host or Cloudflare R2, then paste the image URL.','Paste the public URL of your product image.'));
+  };
+})();
+</script></body></html>
